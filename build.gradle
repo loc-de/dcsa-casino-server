@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group = 'com.polis'
@@ -9,9 +10,31 @@ repositories {
     mavenCentral()
 }
 
+sourceCompatibility = '21'
+
+application {
+    mainClass = 'com.polis.Main'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': application.mainClass.get()
+        )
+    }
+}
+
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation 'org.projectlombok:lombok:1.18.38'
+    compileOnly 'org.projectlombok:lombok:1.18.38'
+    annotationProcessor 'org.projectlombok:lombok:1.18.38'
+    implementation 'org.postgresql:postgresql:42.7.7'
+    implementation 'com.auth0:java-jwt:4.5.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.1'
+    implementation 'org.mindrot:jbcrypt:0.4'
 }
 
 test {
