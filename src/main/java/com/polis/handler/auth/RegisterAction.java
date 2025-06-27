@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.polis.ApplicationContext;
 import com.polis.dto.RegisterRequest;
 import com.polis.model.User;
+import com.polis.security.CryptoService;
 import com.polis.security.PasswordService;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,10 @@ public class RegisterAction {
 
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            RegisterRequest request = objectMapper.readValue(exchange.getRequestBody(), RegisterRequest.class);
+            RegisterRequest request = objectMapper.readValue(
+                    CryptoService.decrypt(exchange.getRequestBody().readAllBytes()),
+                    RegisterRequest.class
+            );
 
             String username = request.getUsername();
             String password = request.getPassword();

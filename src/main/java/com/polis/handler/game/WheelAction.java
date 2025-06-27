@@ -6,6 +6,7 @@ import com.polis.ApplicationContext;
 import com.polis.dto.WheelBetRequest;
 import com.polis.dto.WheelBetResponse;
 import com.polis.model.Bet;
+import com.polis.security.CryptoService;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.AllArgsConstructor;
 
@@ -29,7 +30,10 @@ public class WheelAction {
 
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            WheelBetRequest request = objectMapper.readValue(exchange.getRequestBody(), WheelBetRequest.class);
+            WheelBetRequest request = objectMapper.readValue(
+                    CryptoService.decrypt(exchange.getRequestBody().readAllBytes()),
+                    WheelBetRequest.class
+            );
 
             int userId = request.getUserId();
             String betColor = request.getBetColor().toLowerCase();
@@ -72,9 +76,9 @@ public class WheelAction {
             WheelBetResponse response = new WheelBetResponse(resultColor, resultVideo, resultMoney);
 
             String json = objectMapper.writeValueAsString(response);
-            byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+            byte[] bytes = CryptoService.encrypt(json.getBytes(StandardCharsets.UTF_8));
 
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.getResponseHeaders().set("Content-Type", "application/octet-stream");
             exchange.sendResponseHeaders(200, bytes.length);
             exchange.getResponseBody().write(bytes);
             exchange.close();

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.polis.ApplicationContext;
 import com.polis.dto.CodeRequest;
 import com.polis.model.Transaction;
+import com.polis.security.CryptoService;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.AllArgsConstructor;
 
@@ -19,7 +20,10 @@ public class CodeAction {
 
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            CodeRequest request = objectMapper.readValue(exchange.getRequestBody(), CodeRequest.class);
+            CodeRequest request = objectMapper.readValue(
+                    CryptoService.decrypt(exchange.getRequestBody().readAllBytes()),
+                    CodeRequest.class
+            );
 
             int userId = request.getUserId();
             String code = request.getCode();

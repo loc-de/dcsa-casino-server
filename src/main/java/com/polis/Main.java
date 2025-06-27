@@ -20,9 +20,9 @@ public class Main {
         );
 
         DatabaseManager dbManager = new DatabaseManager(
-                "jdbc:postgresql://bla.bla.bla:bla/casino",
+                "jdbc:postgresql://13.50.171.67:17239/casino",
                 "postgres",
-                "password"
+                "abc123"
         );
 
         ApplicationContext context = new ApplicationContext(dbManager.getConnection());

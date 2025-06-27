@@ -6,6 +6,7 @@ import com.polis.ApplicationContext;
 import com.polis.dto.SlotsBetRequest;
 import com.polis.dto.SlotsBetResponse;
 import com.polis.model.Bet;
+import com.polis.security.CryptoService;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.AllArgsConstructor;
 
@@ -25,7 +26,10 @@ public class SlotsAction {
 
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            SlotsBetRequest request = objectMapper.readValue(exchange.getRequestBody(), SlotsBetRequest.class);
+            SlotsBetRequest request = objectMapper.readValue(
+                    CryptoService.decrypt(exchange.getRequestBody().readAllBytes()),
+                    SlotsBetRequest.class
+            );
 
             int userId = request.getUserId();
             BigDecimal betAmount = request.getBetAmount();
@@ -60,9 +64,9 @@ public class SlotsAction {
             SlotsBetResponse response = new SlotsBetResponse(combination, resultMoney);
 
             String json = objectMapper.writeValueAsString(response);
-            byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+            byte[] bytes = CryptoService.encrypt(json.getBytes(StandardCharsets.UTF_8));
 
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.getResponseHeaders().set("Content-Type", "application/octet-stream");
             exchange.sendResponseHeaders(200, bytes.length);
             exchange.getResponseBody().write(bytes);
             exchange.close();
