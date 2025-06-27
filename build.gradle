@@ -35,8 +35,11 @@ dependencies {
     implementation 'com.auth0:java-jwt:4.5.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.1'
     implementation 'org.mindrot:jbcrypt:0.4'
+
+    testImplementation 'org.testcontainers:postgresql:1.20.2'
+    testImplementation 'org.postgresql:postgresql:42.7.7'
 }
 
-test {
-    useJUnitPlatform()
-}
+//test {
+//    useJUnitPlatform()
+//}
